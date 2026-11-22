@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SONOANATOMY | Laboratorio 3D</title>
+<style>
+:root{--bg:#07111c;--panel:#102033;--line:#2c465b;--cyan:#65d5ed;--text:#e8f1f7;--muted:#91aabc}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+header{display:flex;align-items:center;justify-content:space-between;padding:15px 20px;background:#091725;border-bottom:1px solid var(--line)}
+.logo{font-size:22px;font-weight:800;letter-spacing:2px}.logo span{color:var(--cyan)}header small{color:var(--muted);display:block;margin-top:4px}
+main{display:grid;grid-template-columns:205px minmax(300px,1fr) 330px;gap:12px;padding:12px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.ptitle{font-size:11px;font-weight:bold;letter-spacing:1.2px;padding:12px;border-bottom:1px solid var(--line);color:#c9dbe7}
+.controls{padding:12px}.muted{font-size:11px;color:var(--muted);margin-bottom:8px}
+button{background:#183149;color:var(--text);border:1px solid #3a5870;border-radius:7px;padding:9px 10px;margin:3px;cursor:pointer;font-size:12px}
+button:hover,button.active{background:#14506a;border-color:var(--cyan)}
+.layer{display:block;width:100%;text-align:left}
+.scene{height:calc(100vh - 155px);min-height:460px;position:relative;background:radial-gradient(ellipse at center,#1a354a,#07131f);overflow:hidden}
+#model{width:100%;height:100%;display:block}.hint{position:absolute;top:10px;left:12px;color:#91aabc;font-size:11px;pointer-events:none}
+.note{font-size:10px;color:#8ea7b8;padding:10px}
+.rightcol{display:flex;flex-direction:column;gap:12px}
+.machineWrap{padding:12px}.machine{background:#101820;border:1px solid #3b4b59;border-radius:12px;padding:10px}
+.screen{height:220px;background:#050607;border:7px solid #263541;border-radius:8px;position:relative;overflow:hidden}
+#us{width:100%;height:100%;display:block}.screenlabel{position:absolute;z-index:2;left:7px;top:5px;font-size:9px;color:#7de4fa}
+.knobs{display:flex;justify-content:space-around;padding:10px 3px}.knob{height:30px;width:30px;border-radius:50%;background:linear-gradient(145deg,#64717d,#171e25);border:2px solid #52616d}
+.machinebuttons{display:flex;flex-wrap:wrap}.base{background:#263541;text-align:center;padding:12px;border-radius:5px 5px 15px 15px;color:#8198a8;font-size:10px}
+.info{padding:12px;font-size:12px;line-height:1.55;color:#c5d5df}.info h3{color:var(--cyan);margin:0 0 7px;font-size:14px}
+.status{font-size:11px;color:#a4d9b5;padding:8px 12px}
+@media(max-width:900px){main{grid-template-columns:190px 1fr}.rightcol{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}}
+@media(max-width:600px){main{grid-template-columns:1fr}.scene{height:480px}.rightcol{display:flex}}
+</style>
+</head>
+<body>
+<header><div><div class="logo">SONO<span>ANATOMY</span></div><small>3D ULTRASOUND ANATOMY LAB · CUELLO</small></div><div style="color:#9de1b4;font-size:12px">● PROTOTIPO EDUCATIVO</div></header>
+<main>
+<aside class="panel"><div class="ptitle">CUELLO · CAPAS</div><div class="controls">
+<div class="muted">ACTIVAR / DESACTIVAR</div>
+<button class="layer active" data-layer="skin">Piel / superficie</button><button class="layer active" data-layer="scm">ECM</button><button class="layer active" data-layer="strap">Infrahioideos</button><button class="layer active" data-layer="artery">Carótidas</button><button class="layer active" data-layer="vein">Yugulares</button><button class="layer active" data-layer="thyroid">Tiroides</button><button class="layer active" data-layer="trachea">Tráquea</button>
+<hr style="border-color:var(--line)"><button id="front">Vista anterior</button><button id="side">Vista lateral</button><button id="reset">Reiniciar</button>
+</div></aside>
+<section class="panel"><div class="ptitle">MODELO ANATÓMICO 3D · ROTACIÓN LIBRE</div><div class="scene"><div class="hint">Arrastrá para rotar · scroll para acercar / alejar</div><canvas id="model"></canvas><div id="fallback" style="display:none;padding:30px;text-align:center;color:#f5c27a">No se pudo cargar el motor 3D. Verificá conexión a internet y recargá.</div></div><div class="note">Modelo esquemático para aprendizaje. Variaciones anatómicas frecuentes; no utilizar como referencia diagnóstica.</div></section>
+<aside class="rightcol">
+<div class="panel"><div class="ptitle">ECÓGRAFO VIRTUAL</div><div class="machineWrap"><div class="machine"><div class="screen"><div class="screenlabel">HNPM · CUELLO · TRANSVERSAL · 10 MHz</div><canvas id="us"></canvas></div><div class="knobs"><span class="knob"></span><span class="knob"></span><span class="knob"></span><span class="knob"></span></div><div class="machinebuttons"><button>GAIN</button><button>DEPTH</button><button>FREEZE</button><button>COLOR</button><button>CALIPER</button></div></div><div class="base">ULTRASOUND SYSTEM</div><div class="status">Pantalla de ecografía simulada · imagen sintética</div></div>
+<div class="panel"><div class="ptitle">CORRELACIÓN ANATÓMICA</div><div class="info"><h3>Paquete vasculonervioso</h3>La carótida común suele ubicarse medial y la vena yugular interna lateral, aunque existe variabilidad. El nervio vago discurre dentro de la vaina carotídea, habitualmente posterior entre los vasos, y puede no visualizarse en una exploración rutinaria.<br><br><b>Objetivo:</b> identificar relaciones anatómicas y correlacionarlas con el corte ecográfico transversal.</div></div>
+</aside></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+const canvas=document.getElementById('model');
+if(!window.THREE){document.getElementById('fallback').style.display='block';canvas.style.display='none';return;}
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(36,1,0.1,100);camera.position.set(0,0,8);
+const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+scene.add(new THREE.HemisphereLight(0xcbe8ff,0x40262d,1.6));
+const light=new THREE.DirectionalLight(0xffdfcb,2.2);light.position.set(4,5,6);scene.add(light);
+const group=new THREE.Group();scene.add(group);
+function ellipsoid(name,x,y,z,sx,sy,sz,color,layer){
+ const mesh=new THREE.Mesh(new THREE.SphereGeometry(1,32,24),new THREE.MeshStandardMaterial({color,roughness:.62}));
+ mesh.position.set(x,y,z);mesh.scale.set(sx,sy,sz);mesh.name=name;mesh.userData.layer=layer;group.add(mesh);return mesh;
+}
+function tube(name,points,radius,color,layer){
+ const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(p[0],p[1],p[2])));
+ const mesh=new THREE.Mesh(new THREE.TubeGeometry(curve,48,radius,14,false),new THREE.MeshStandardMaterial({color,roughness:.5}));
+ mesh.name=name;mesh.userData.layer=layer;group.add(mesh);return mesh;
+}
+// neck silhouette
+ellipsoid('Cuello / superficie',0,0,0,.98,2.35,.65,'#bd897a','skin');
+ellipsoid('ECM izquierdo',-.55,.35,.32,.26,1.55,.25,'#985b61','scm').rotation.z=-.16;
+ellipsoid('ECM derecho',.55,.35,.32,.26,1.55,.25,'#985b61','scm').rotation.z=.16;
+ellipsoid('Infrahioideo izquierdo',-.18,-.28,.43,.16,1.15,.16,'#8b565a','strap');
+ellipsoid('Infrahioideo derecho',.18,-.28,.43,.16,1.15,.16,'#8b565a','strap');
+ellipsoid('Tiroides izquierda',-.34,-1.02,.52,.34,.42,.23,'#c78173','thyroid');
+ellipsoid('Tiroides derecha',.34,-1.02,.52,.34,.42,.23,'#c78173','thyroid');
+ellipsoid('Istmo tiroideo',0,-1.02,.53,.25,.17,.2,'#c78173','thyroid');
+ellipsoid('Tráquea',0,-.48,.56,.25,1.22,.23,'#d2d0c6','trachea');
+for(let y=-1.48;y<.48;y+=.22){const ring=new THREE.Mesh(new THREE.TorusGeometry(.255,.022,8,28),new THREE.MeshStandardMaterial({color:'#92999a'}));ring.position.set(0,y,.57);ring.userData.layer='trachea';group.add(ring);}
+tube('Carótida izquierda',[[-.44,-1.5,.6],[-.43,-.55,.62],[-.42,.25,.6],[-.42,1.05,.48]],.12,'#b84e55','artery');
+tube('Carótida derecha',[[.44,-1.5,.6],[.43,-.55,.62],[.42,.25,.6],[.42,1.05,.48]],.12,'#b84e55','artery');
+tube('Yugular izquierda',[[-.69,-1.5,.66],[-.69,-.55,.69],[-.67,.3,.62],[-.65,1.05,.5]],.17,'#547fae','vein');
+tube('Yugular derecha',[[.69,-1.5,.66],[.69,-.55,.69],[.67,.3,.62],[.65,1.05,.5]],.17,'#547fae','vein');
+ellipsoid('Vago izquierdo',-.55,-.3,.72,.045,.65,.045,'#d6b36c','nerve');
+ellipsoid('Vago derecho',.55,-.3,.72,.045,.65,.045,'#d6b36c','nerve');
+let dragging=false,lastX=0,lastY=0,rotY=0,rotX=0;
+canvas.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId)});
+canvas.addEventListener('pointermove',e=>{if(!dragging)return;rotY+=(e.clientX-lastX)*.008;rotX+=(e.clientY-lastY)*.008;lastX=e.clientX;lastY=e.clientY;group.rotation.set(rotX,rotY,0)});
+canvas.addEventListener('pointerup',()=>dragging=false);
+canvas.addEventListener('wheel',e=>{camera.position.z=Math.max(4.5,Math.min(12,camera.position.z+e.deltaY*.008));},{passive:true});
+document.getElementById('front').onclick=()=>{rotX=rotY=0;group.rotation.set(0,0,0)};
+document.getElementById('side').onclick=()=>{rotX=0;rotY=1.35;group.rotation.set(rotX,rotY,0)};
+document.getElementById('reset').onclick=()=>{rotX=rotY=0;group.rotation.set(0,0,0);camera.position.z=8};
+document.querySelectorAll('[data-layer]').forEach(btn=>btn.addEventListener('click',()=>{group.traverse(obj=>{if(obj.userData.layer===btn.dataset.layer)obj.visible=!obj.visible});btn.classList.toggle('active')}));
+function resize(){const rect=canvas.getBoundingClientRect();renderer.setSize(rect.width,rect.height,false);camera.aspect=rect.width/Math.max(rect.height,1);camera.updateProjectionMatrix();}
+window.addEventListener('resize',resize);resize();
+(function animate(){requestAnimationFrame(animate);renderer.render(scene,camera)})();
+})();
+(function drawUltrasound(){
+const c=document.getElementById('us'),ctx=c.getContext('2d');
+function draw(){const w=c.clientWidth,h=c.clientHeight;if(!w||!h)return;c.width=w*2;c.height=h*2;ctx.setTransform(2,0,0,2,0,0);ctx.fillStyle='#050505';ctx.fillRect(0,0,w,h);
+const grad=ctx.createLinearGradient(0,0,0,h);grad.addColorStop(0,'#9a9a9a');grad.addColorStop(.25,'#555');grad.addColorStop(1,'#101010');ctx.fillStyle=grad;ctx.fillRect(0,0,w,h);
+for(let i=0;i<1700;i++){ctx.fillStyle='rgba(255,255,255,'+(Math.random()*.13)+')';ctx.fillRect(Math.random()*w,Math.random()*h,1,1)}
+// superficial fascia
+ctx.strokeStyle='#d9d9d9';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,22);ctx.quadraticCurveTo(w*.5,17,w,23);ctx.stroke();
+// carotid artery
+ctx.beginPath();ctx.ellipse(w*.35,h*.55,w*.115,h*.17,0,0,Math.PI*2);ctx.strokeStyle='#e1e1e1';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#020202';ctx.fill();
+// jugular vein
+ctx.beginPath();ctx.ellipse(w*.62,h*.48,w*.16,h*.18,0,0,Math.PI*2);ctx.strokeStyle='#c8c8c8';ctx.stroke();ctx.fillStyle='#020202';ctx.fill();
+// labels
+ctx.font='10px Arial';ctx.fillStyle='#7de4fa';ctx.fillText('A',w*.32,h*.53);ctx.fillText('V',w*.60,h*.46);ctx.fillStyle='#ddd';ctx.fillText('CARÓTIDA',w*.17,h*.83);ctx.fillText('YUGULAR',w*.53,h*.83);
+}
+draw();window.addEventListener('resize',draw);
+})();
+</script>
+</body></html>
